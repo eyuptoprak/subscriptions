@@ -24,3 +24,7 @@ Route::domain('google.subscriptions.test')->group(function () {
     Route::resource('subscriptions', 'App\Http\Controllers\GoogleSubscriptionController');
 });
 
+Route::domain('apple.subscriptions.test')->group(function () {
+    Route::resource('subscriptions', 'App\Http\Controllers\AppleSubscriptionController');
+});
+
