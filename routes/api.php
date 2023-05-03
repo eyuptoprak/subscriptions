@@ -19,3 +19,8 @@ Route::resource('devices', 'App\Http\Controllers\DeviceController');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::domain('google.subscriptions.test')->group(function () {
+    Route::resource('subscriptions', 'App\Http\Controllers\GoogleSubscriptionController');
+});
+
