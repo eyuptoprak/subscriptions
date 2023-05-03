@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AppleSubscription\StoreRequest;
+use App\Http\Resources\AppleSubscription\ErrorResource;
+use App\Http\Resources\AppleSubscription\SubscriptionResource;
 use App\Models\AppleSubscription;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AppleSubscriptionController extends Controller
@@ -15,20 +19,33 @@ class AppleSubscriptionController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return SubscriptionResource|ErrorResource
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request): SubscriptionResource|ErrorResource
     {
-        //
+        $receipt = $request->receipt;
+
+        $responseData = [];
+        $responseData['status'] = false;
+
+        if ($this->isValidSubscription($receipt)) {
+            $appleData['expire_date'] = $this->getExpireDate();
+            $appleData['receipt'] = $request->receipt;
+
+            if (!$subscription = AppleSubscription::create($appleData)) {
+                $responseData['message'] = trans('apple.server_side_error');
+                return new ErrorResource($responseData);
+            }
+
+            return new SubscriptionResource($subscription);
+
+        } else {
+            $responseData['message'] = trans('apple.is_not_valid_subscription');
+            return new ErrorResource($responseData);
+        }
     }
 
     /**
@@ -40,26 +57,25 @@ class AppleSubscriptionController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @return Carbon
      */
-    public function edit(AppleSubscription $appleSubscription)
+    private function getExpireDate(): Carbon
     {
-        //
+        $subscriptionDays = [14, 30, 180, 360];
+        shuffle($subscriptionDays);
+
+        return Carbon::now()->addDays($subscriptionDays[0]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param int $receiptNumber
+     * @return bool
      */
-    public function update(Request $request, AppleSubscription $appleSubscription)
+    private function isValidSubscription(int $receiptNumber): bool
     {
-        //
+        $receiptLastNumber = substr($receiptNumber, -1);
+        return $receiptLastNumber % 2 != 0 && $receiptLastNumber > 0;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(AppleSubscription $appleSubscription)
-    {
-        //
-    }
+
 }
