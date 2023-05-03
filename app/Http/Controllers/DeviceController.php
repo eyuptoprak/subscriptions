@@ -2,64 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Device\StoreRequest;
+use App\Http\Resources\Device\StoreResource;
 use App\Models\Device;
-use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+
 
     /**
-     * Show the form for creating a new resource.
+     * @param StoreRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function create()
+    public function store(StoreRequest $request)
     {
-        //
+        $device = Device::updateOrCreate(['uuid' => $request->uuid, 'appId'=> $request->appId], request()->all());
+
+        return (new StoreResource($device))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Device $device)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Device $device)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Device $device)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Device $device)
-    {
-        //
-    }
 }
