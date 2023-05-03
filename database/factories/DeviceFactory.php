@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\StoreEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,7 @@ class DeviceFactory extends Factory
             'uuid' => fake()->uuid,
             'appId' => fake()->domainWord,
             'language_code' => fake()->languageCode,
-            'operating_system' => fake()->linuxPlatformToken,
+            'operating_system' => StoreEnum::randomValue(),
         ];
     }
 }
