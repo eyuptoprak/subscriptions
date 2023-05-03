@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\GoogleSubscription\ErrorResource;
+use App\Http\Resources\GoogleSubscription\SubscriptionResource;
 use App\Models\GoogleSubscription;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class GoogleSubscriptionController extends Controller
@@ -15,20 +18,33 @@ class GoogleSubscriptionController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return SubscriptionResource|ErrorResource
      */
-    public function store(Request $request)
+    public function store(Request $request): SubscriptionResource|ErrorResource
     {
-        //
+        $receipt = $request->receipt;
+
+        $responseData = [];
+        $responseData['status'] = false;
+
+        if ($this->isValidSubscription($receipt)) {
+            $googleData['expire_date'] = $this->getExpireDate();
+            $googleData['receipt'] = $request->receipt;
+
+            if (!$google = GoogleSubscription::create($googleData)) {
+                $responseData['message'] = trans('google.server_side_error');
+                return new ErrorResource($responseData);
+            }
+
+            return new SubscriptionResource($google);
+
+        } else {
+            $responseData['message'] = trans('google.is_not_valid_subscription');
+            return new ErrorResource($responseData);
+        }
     }
 
     /**
@@ -40,26 +56,25 @@ class GoogleSubscriptionController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @return Carbon
      */
-    public function edit(GoogleSubscription $googleSubscription)
+    private function getExpireDate(): Carbon
     {
-        //
+        $subscriptionDays = [14, 30, 180, 360];
+        shuffle($subscriptionDays);
+
+        return Carbon::now()->addDays($subscriptionDays[0]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param int $receiptNumber
+     * @return bool
      */
-    public function update(Request $request, GoogleSubscription $googleSubscription)
+    private function isValidSubscription(int $receiptNumber): bool
     {
-        //
+        $receiptLastNumber = substr($receiptNumber, -1);
+        return $receiptLastNumber % 2 != 0 && $receiptLastNumber > 0;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(GoogleSubscription $googleSubscription)
-    {
-        //
-    }
+
 }
