@@ -1,11 +1,11 @@
 <?php
 
 return [
-
+    'domain'=> env('APPLE_DOMAIN'),
     'api' => [
-        'subscription_check_url'=>'http://apple.subscriptions.test/api/subscriptions',
-        'username'=> 'test',
-        'password'=>'password',
+        'uri'=>  env('APPLE_API_URI'),
+        'username'=>  env('GOOGLE_SUBSCRIPTION_USERNAME'),
+        'password'=> env('GOOGLE_SUBSCRIPTION_USERNAME'),
     ],
 
 ];

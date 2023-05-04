@@ -10,7 +10,7 @@ class Purchase extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['receipt','status','client_token', 'appId', 'expire_date'];
+    protected $fillable = ['receipt','status','client_token', 'appId', 'expire_date','store'];
     protected $table = "purchases";
     protected $guarded = ['id'];
 
