@@ -25,34 +25,18 @@ class GoogleSubscriptionController extends Controller
      */
     public function store(Request $request): SubscriptionResource|ErrorResource
     {
-        $receipt = $request->receipt;
+        $this->request = $request;
 
-        $responseData = [];
-        $responseData['status'] = false;
-
-        if ($this->isValidSubscription($receipt)) {
-            $googleData['expire_date'] = $this->getExpireDate();
-            $googleData['receipt'] = $request->receipt;
-
-            if (!$google = GoogleSubscription::create($googleData)) {
-                $responseData['message'] = trans('google.server_side_error');
-                return new ErrorResource($responseData);
-            }
-
-            return new SubscriptionResource($google);
-
-        } else {
-            $responseData['message'] = trans('google.is_not_valid_subscription');
-            return new ErrorResource($responseData);
-        }
+        return $this->getReceiptStatus();
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(GoogleSubscription $googleSubscription)
+    public function checkReceipt(Request $request): SubscriptionResource|ErrorResource
     {
-        //
+        $this->request = $request;
+        return $this->getReceiptStatus();
     }
 
     /**
@@ -74,6 +58,33 @@ class GoogleSubscriptionController extends Controller
     {
         $receiptLastNumber = substr($receiptNumber, -1);
         return $receiptLastNumber % 2 != 0 && $receiptLastNumber > 0;
+    }
+
+
+    /**
+     * @return ErrorResource|SubscriptionResource
+     */
+    private function getReceiptStatus()
+    {
+        $receipt = $this->request->receipt;
+
+        $responseData = [];
+        $responseData['status'] = false;
+
+        if ($this->isValidSubscription($receipt)) {
+            $googleData['expire_date'] = $this->getExpireDate();
+            $googleData['receipt'] = $receipt;
+
+            if (!$google = GoogleSubscription::create($googleData)) {
+                $responseData['message'] = trans('google.server_side_error');
+                return new ErrorResource($responseData);
+            }
+
+            return new SubscriptionResource($google);
+        } else {
+            $responseData['message'] = trans('google.is_not_valid_subscription');
+            return new ErrorResource($responseData);
+        }
     }
 
 

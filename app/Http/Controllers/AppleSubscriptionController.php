@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AppleSubscription\StoreRequest;
 use App\Http\Resources\AppleSubscription\ErrorResource;
 use App\Http\Resources\AppleSubscription\SubscriptionResource;
 use App\Models\AppleSubscription;
@@ -24,36 +23,20 @@ class AppleSubscriptionController extends Controller
      * @param Request $request
      * @return SubscriptionResource|ErrorResource
      */
-    public function store(StoreRequest $request): SubscriptionResource|ErrorResource
+    public function store(Request $request): SubscriptionResource|ErrorResource
     {
-        $receipt = $request->receipt;
+        $this->request = $request;
 
-        $responseData = [];
-        $responseData['status'] = false;
-
-        if ($this->isValidSubscription($receipt)) {
-            $appleData['expire_date'] = $this->getExpireDate();
-            $appleData['receipt'] = $request->receipt;
-
-            if (!$subscription = AppleSubscription::create($appleData)) {
-                $responseData['message'] = trans('apple.server_side_error');
-                return new ErrorResource($responseData);
-            }
-
-            return new SubscriptionResource($subscription);
-
-        } else {
-            $responseData['message'] = trans('apple.is_not_valid_subscription');
-            return new ErrorResource($responseData);
-        }
+        return $this->getReceiptStatus();
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(AppleSubscription $appleSubscription)
+    public function checkReceipt(Request $request): SubscriptionResource|ErrorResource
     {
-        //
+        $this->request = $request;
+        return $this->getReceiptStatus();
     }
 
     /**
@@ -75,6 +58,33 @@ class AppleSubscriptionController extends Controller
     {
         $receiptLastNumber = substr($receiptNumber, -1);
         return $receiptLastNumber % 2 != 0 && $receiptLastNumber > 0;
+    }
+
+
+    /**
+     * @return ErrorResource|SubscriptionResource
+     */
+    private function getReceiptStatus()
+    {
+        $receipt = $this->request->receipt;
+
+        $responseData = [];
+        $responseData['status'] = false;
+
+        if ($this->isValidSubscription($receipt)) {
+            $appleData['expire_date'] = $this->getExpireDate();
+            $appleData['receipt'] = $receipt;
+
+            if (!$apple = AppleSubscription::create($appleData)) {
+                $responseData['message'] = trans('apple.server_side_error');
+                return new ErrorResource($responseData);
+            }
+
+            return new SubscriptionResource($apple);
+        } else {
+            $responseData['message'] = trans('apple.is_not_valid_subscription');
+            return new ErrorResource($responseData);
+        }
     }
 
 
