@@ -2,12 +2,15 @@
 
 namespace App\Providers;
 
+use App\Listeners\NotifySubscriptionStatusToThirdParty;
 use App\Models\Device;
 use App\Observers\DeviceObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+
+use App\Events\SubscriptionStatusEvent;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        SubscriptionStatusEvent::class => [
+            NotifySubscriptionStatusToThirdParty::class,
         ],
     ];
 
