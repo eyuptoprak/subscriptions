@@ -15,16 +15,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('devices', 'App\Http\Controllers\DeviceController');
+Route::resource('purchases', 'App\Http\Controllers\PurchaseController');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::domain('google.subscriptions.test')->group(function () {
+Route::domain("google.domain")->group(function () {
     Route::resource('subscriptions', 'App\Http\Controllers\GoogleSubscriptionController');
 });
 
-Route::domain('apple.subscriptions.test')->group(function () {
+Route::domain(config('apple.domain'))->group(function () {
     Route::resource('subscriptions', 'App\Http\Controllers\AppleSubscriptionController');
 });
 

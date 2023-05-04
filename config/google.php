@@ -1,11 +1,11 @@
 <?php
 
 return [
-
+    'domain'=> env('GOOGLE_DOMAIN'),
     'api' => [
-        'subscription_check_url'=>'http://google.subscriptions.test/api/subscriptions',
-        'username'=> 'test',
-        'password'=>'password',
+        'uri'=>  env('GOOGLE_API_URI'),
+        'username'=>  env('GOOGLE_SUBSCRIPTION_USERNAME'),
+        'password'=> env('GOOGLE_SUBSCRIPTION_USERNAME'),
     ],
 
 ];
