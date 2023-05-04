@@ -23,9 +23,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::domain("google.domain")->group(function () {
     Route::resource('subscriptions', 'App\Http\Controllers\GoogleSubscriptionController');
+    Route::get('check-receipt/{receipt}',['App\Http\Controllers\GoogleSubscriptionController','checkReceipt']);
 });
+
+
 
 Route::domain(config('apple.domain'))->group(function () {
     Route::resource('subscriptions', 'App\Http\Controllers\AppleSubscriptionController');
+    Route::get('check-receipt/{receipt}',['App\Http\Controllers\AppleSubscriptionController','checkReceipt']);
 });
 
