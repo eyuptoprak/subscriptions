@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('appId', 150);
             $table->string('client_token', 150);
             $table->string('store', 150);
-            $table->enum('status', \App\Enums\Purchase\PurchaseStatus::array());
+            $table->enum('status', \App\Enums\Purchase\PurchaseStatus::values());
             $table->dateTimeTz('expire_date');
             $table->timestamps();
         });
