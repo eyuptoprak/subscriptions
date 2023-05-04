@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Purchase;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class PurchaseSeed extends Seeder
 {
@@ -20,14 +19,7 @@ class PurchaseSeed extends Seeder
         foreach (array_chunk($range, $chunkSize) as $chunk) {
             $purchaseData = array();
             foreach ($chunk as $i) {
-                $purchaseData[] = [
-                    'receipt' => fake()->randomNumber(),
-                    'appId' => 'app1',
-                    'client_token' => Str::random(60),
-                    'status' => 'started',
-                    'store' => 'google',
-                    'expire_date' => fake()->dateTime(),
-                ];
+                $purchaseData[] = Purchase::factory()->create();
             }
             Purchase::insert($purchaseData);
         }
